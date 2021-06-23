@@ -49,7 +49,7 @@
   "scripts": {
     "build": "babel --delete-dir-on-start --out-dir dist --copy-files --ignore \"**/__tests__/**,**/__mocks__/**\" --no-copy-ignored src",
     "start": "node ./scripts/codesandbox-page.js",
-    "test": "is-ci \"test:final:coverage\" \"test:exercise:watch\"",
+    "test": "npm run test:final -- --coverage && npm run test:exercise -- --watchAll",
     "test:exercise": "jest --config test/jest.config.exercises.js",
     "test:exercise:watch": "npm run test:exercise -- --watchAll",
     "test:exercise:coverage": "npm run test:exercise -- --coverage",
