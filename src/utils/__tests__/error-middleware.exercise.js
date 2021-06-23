@@ -2,10 +2,19 @@
 import {UnauthorizedError} from 'express-jwt'
 import errorMiddleware from '../error-middleware'
 
+function produceRes(overrides) {
+  const res = {
+    json: jest.fn(),
+    status: jest.fn(),
+    ...overrides,
+  }
+  return res
+}
+
 test('responds with 401 for express-jwt UnauthorizedError', () => {
   const req = {}
   const next = jest.fn()
-  const res = {json: jest.fn(() => res), status: jest.fn(() => res)}
+  const res = produceRes()
   const code = 'random_error_code'
   const message = 'random message'
   const error = new UnauthorizedError(code, {message})
@@ -23,11 +32,7 @@ test('responds with 401 for express-jwt UnauthorizedError', () => {
 test('calls next if header is sent already', () => {
   const req = {}
   const next = jest.fn()
-  const res = {
-    json: jest.fn(() => res),
-    status: jest.fn(() => res),
-    headersSent: true,
-  }
+  const res = produceRes({headersSent: true})
   const error = new Error('Some Error')
   errorMiddleware(error, req, res, next)
   expect(next).toHaveBeenCalledWith(error)
@@ -39,7 +44,7 @@ test('calls next if header is sent already', () => {
 test('responds with 500 and the error object', () => {
   const req = {}
   const next = jest.fn()
-  const res = {json: jest.fn(() => res), status: jest.fn(() => res)}
+  const res = produceRes()
   const error = new Error('Some Error')
   errorMiddleware(error, req, res, next)
   expect(next).not.toHaveBeenCalled()
