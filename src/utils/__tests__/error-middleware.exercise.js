@@ -6,16 +6,18 @@ test('responds with 401 for express-jwt UnauthorizedError', () => {
   const req = {}
   const next = jest.fn()
   const res = {json: jest.fn(() => res), status: jest.fn(() => res)}
-  const error = new UnauthorizedError('random_error_code', {
-    message: 'random message',
-  })
+  const code = 'random_error_code'
+  const message = 'random message'
+  const error = new UnauthorizedError(code, {message})
   errorMiddleware(error, req, res, next)
   expect(next).not.toHaveBeenCalled()
   expect(res.status).toHaveBeenCalledWith(401)
+  expect(res.status).toHaveBeenCalledTimes(1)
   expect(res.json).toHaveBeenCalledWith({
-    code: 'random_error_code',
-    message: 'random message',
+    code: error.code,
+    message: error.message,
   })
+  expect(res.json).toHaveBeenCalledTimes(1)
 })
 
 // 🐨 you'll need both of these:
