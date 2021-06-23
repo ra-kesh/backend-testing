@@ -28,10 +28,27 @@ test('calls next if header is sent already', () => {
     status: jest.fn(() => res),
     headersSent: true,
   }
-  const error = new Error('blah')
+  const error = new Error('Some Error')
   errorMiddleware(error, req, res, next)
   expect(next).toHaveBeenCalledWith(error)
   expect(next).toHaveBeenCalledTimes(1)
   expect(res.status).not.toHaveBeenCalled()
   expect(res.json).not.toHaveBeenCalled()
+})
+
+test('responds with 500 and the error object', () => {
+  const req = {}
+  const next = jest.fn()
+  const res = {json: jest.fn(() => res), status: jest.fn(() => res)}
+  const error = new Error('Some Error')
+  errorMiddleware(error, req, res, next)
+  expect(next).not.toHaveBeenCalled()
+  expect(res.status).toHaveBeenCalledWith(500)
+  expect(res.status).toHaveBeenCalledTimes(1)
+  expect(res.json).toHaveBeenCalledWith({
+    code: error.code,
+    message: error.message,
+    stack: error.stack,
+  })
+  expect(res.json).toHaveBeenCalledTimes(1)
 })
